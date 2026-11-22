@@ -34,7 +34,7 @@ td input{width:70px;padding:4px;text-align:right}
 <div id="nb" class="hide"><div class="row"><input id="bn1" placeholder="Aap ki dukan / business ka naam"><input id="bn2" placeholder="Neeche ki line (optional), jaise sheher ya phone"></div><div class="row"><button class="p" onclick="saveName()">Save naam</button><button onclick="$('nb').className='hide'">Cancel</button></div></div>
 <div id="cs" class="hide"><div class="row"><textarea id="csx" rows="3" placeholder="Supabase ka URL aur Key wala text yahan paste karein (Distribution app mein pehle se jura ho to khud jur jata hai)" style="width:100%;box-sizing:border-box;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:8px;font:inherit"></textarea></div><div class="row"><button class="p" onclick="saveCloud()">Connect and Sync Now</button><button onclick="expData()">Backup (file)</button><button onclick="$('imf').click()">Import (file)</button><button onclick="$('cs').className='hide'">Close</button></div><input type="file" id="imf" accept=".json,application/json" class="hide" onchange="impData(this)"><div class="mu">Is app ki cloud table alag hai (rmhr). Guide ke mutabiq pehli dafa ek SQL chalani hoti hai.</div></div>
 <div id="st" class="mu noprint" style="margin-bottom:8px;cursor:pointer">Connecting...</div>
-<div class="tabs noprint"><button id="t1" class="on" onclick="tab(1)">New Order</button><button id="t2" onclick="tab(2)">Products</button><button id="t3" onclick="tab(3)">Saved Orders</button><button id="t4" onclick="tab(4)">Sale Invoice</button><button id="t5" onclick="tab(5)">Stock</button><button id="t6" onclick="tab(6)">Profit Report</button></div>
+<div class="tabs noprint"><button id="t1" class="on" onclick="tab(1)">New Order</button><button id="t2" onclick="tab(2)">Products</button><button id="t3" onclick="tab(3)">Saved Orders</button><button id="t4" onclick="tab(4)">Sale Invoice</button><button id="t5" onclick="tab(5)">Stock</button><button id="t6" onclick="tab(6)">Profit Report</button><button id="t7" onclick="tab(7)">Purchase Order</button></div>
 
 <div id="v1">
 <div class="card">
@@ -95,6 +95,23 @@ td input{width:70px;padding:4px;text-align:right}
 <div class="row" style="margin-top:8px"><button class="p" onclick="savePur()">Save Purchase</button><button onclick="newPur()">New / Clear</button></div></div>
 <div class="card"><b>Purchase history</b><div class="w"><table><thead><tr><th>Date</th><th>Bill</th><th>Supplier</th><th>Total</th><th></th></tr></thead><tbody id="phb"></tbody></table></div></div>
 </div></div>
+
+<div id="v7" class="hide">
+<div class="card"><b>Purchase Order</b> <span class="mu">(distribution ko order dena)</span>
+<div class="row"><div class="acw" style="flex:2 1 200px"><div class="mu">Distribution ka naam</div><input id="osup" autocomplete="off" placeholder="Distribution name likhein ya chunein" style="width:100%;box-sizing:border-box"><div class="acb hide" id="osb"></div></div><div><div class="mu">Order date</div><input id="odt" type="date" style="width:100%;box-sizing:border-box"></div><div><div class="mu">Supply kab aayegi</div><input id="osd" type="date" style="width:100%;box-sizing:border-box"></div></div>
+<div class="row noprint"><div class="acw" style="flex:1 1 100%"><input id="opick" autocomplete="off" oninput="fillDeals()" placeholder="Product: tap karein ya naam likhein" style="width:100%;box-sizing:border-box"><div class="acb hide" id="okb"></div></div></div>
+<div class="row"><div><div class="mu">Deal</div><select id="odeal" onchange="poAuto()" style="width:100%;box-sizing:border-box"><option value="a">Auto (best deal)</option><option value="m">Manual</option></select></div><div><div class="mu">Qty</div><input id="oqty" type="number" min="1" placeholder="Qty" oninput="poAuto()" style="width:100%;box-sizing:border-box"></div></div>
+<div class="row"><div><div class="mu">Bonus (free, auto)</div><input id="obon" type="number" min="0" placeholder="Bonus" oninput="poMan()" style="width:100%;box-sizing:border-box"></div><div><div class="mu">Extra Disc % (auto)</div><input id="odsc" type="number" min="0" step="any" placeholder="Disc %" oninput="poMan()" style="width:100%;box-sizing:border-box"></div></div>
+<div id="opv" style="font-weight:600;margin:6px 0"></div>
+<div class="mu">Retail se Trade price (14.5%) khud lagta hai. Product ki deal (bonus / extra discount) Qty ke hisaab se khud chun li jati hai. Bonus ya Disc % khud badlein to deal "Manual" ho jati hai.</div>
+<div class="row"><button class="p" onclick="poAdd()">Add</button></div></div>
+<div class="card"><b>Is order ki lines</b><div class="w"><table><thead><tr><th>Product</th><th>Pack</th><th>Qty</th><th>Bonus</th><th>Total qty</th><th>Retail</th><th>Trade</th><th>Disc%</th><th>Amount</th><th>Cost/unit</th><th></th></tr></thead><tbody id="olb"></tbody></table></div>
+<div class="tot">Order amount (dena hoga): Rs <span id="otot">0</span></div>
+<div class="mu">Total qty (bonus samet) ki retail value: Rs <span id="orv">0</span> | Retail par bechne se profit: Rs <span id="opf">0</span></div>
+<div class="row" style="margin-top:8px"><button class="p" onclick="poSave()">Save Order</button><button onclick="poNew()">New / Clear</button></div></div>
+<div class="card"><b>Order diye hue (supply ka hisaab)</b><div id="osum" style="margin:6px 0"></div><input id="ohs" placeholder="Distribution ya date search" oninput="drawO()" style="width:100%;box-sizing:border-box;margin-bottom:8px"><div class="w"><table><thead><tr><th>Order date</th><th>Distribution</th><th>Supply</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody id="ohb"></tbody></table></div></div>
+<div class="card" id="ovw"></div>
+</div>
 
 <div id="v6" class="hide">
 <div class="card"><b>Profit Report</b> <span class="mu">(Sale Invoice ke hisaab se)</span>
@@ -189,7 +206,7 @@ const m=x=>(Math.round(x*100)/100).toLocaleString('en-US',{minimumFractionDigits
 const lab=p=>p.n+' '+p.k+(p.f>0?' ('+p.b+'+'+p.f+')':p.d>0?' ('+(p.b>0?p.b+' unit: ':'')+p.d+'%)':'');
 const bonus=(p,q)=>p.b>0?Math.floor(q/p.b)*p.f:0;
 const dprice=p=>p.t*(1-p.d/100)*((p.b>0&&p.f>0)?p.b/(p.b+p.f):1);
-function tab(n){CT=n;showBN();$('v1').className=n==1?'':'hide';$('v2').className=n==2?'':'hide';$('v3').className=(n==1||n==3)?'':'hide';$('v4').className=n==4?'':'hide';$('v5').className=n==5?'':'hide';$('v6').className=n==6?'':'hide';for(let i=1;i<7;i++)$('t'+i).className=i==n?'on':'';if(n==2)prods();if(n!=2)hist();if(n==5){drawS();drawP()}if(n==6)drawR();if(n==4){if(!IID&&($('ino').value==''||$('ino').value==AUTO)){AUTO=nextNo();$('ino').value=AUTO}drawI()}}
+function tab(n){CT=n;showBN();$('v1').className=n==1?'':'hide';$('v2').className=n==2?'':'hide';$('v3').className=(n==1||n==3)?'':'hide';$('v4').className=n==4?'':'hide';$('v5').className=n==5?'':'hide';$('v6').className=n==6?'':'hide';$('v7').className=n==7?'':'hide';for(let i=1;i<8;i++)$('t'+i).className=i==n?'on':'';if(n==2)prods();if(n!=2)hist();if(n==5){drawS();drawP()}if(n==6)drawR();if(n==7)drawO();if(n==4){if(!IID&&($('ino').value==''||$('ino').value==AUTO)){AUTO=nextNo();$('ino').value=AUTO}drawI()}}
 function opts(){lets()}
 const clean=n=>n.replace(/\s*\((\d+-\d+ packs|1 pack and above)\)/,'');
 function mt(l,q){q=q.trim().toLowerCase();if(!q)return 1;l=l.toLowerCase();if(l.startsWith(q))return 0;if(q.length<2)return -1;const qs=q.split(/\s+/),ws=l.split(/[\s()\-\/]+/);if(qs.every(w=>ws.some(x=>x.startsWith(w))))return 1;return q.length>=3&&l.includes(q)?2:-1}
@@ -307,7 +324,7 @@ function saveOrd(){if(!L.length){msg('Pehle products add karein');return}
 const c=calcL(),id=EID||Date.now().toString(36);EID=id;
 const o={v:3,store:c.store,date:c.date,xd:c.xd,gr:c.gr,dl:c.dl,g:c.nt,net:c.net,ts:Date.now(),lines:JSON.stringify(c.ln)};
 OR[id]=o;locO();PEND[id]='set';locP();hist();msg('Order save ho gaya');push(id)}
-function hist(){histI();histP();drawS();drawR();const q=($('hs').value||'').toLowerCase();const ids=Object.keys(OR).filter(id=>!OR[id].t&&(OR[id].store+' '+OR[id].date).toLowerCase().includes(q)).sort((a,b)=>OR[b].ts-OR[a].ts);let tt=0;ids.forEach(id=>tt+=OR[id].net);$('hsum').textContent=ids.length+' orders | Total: Rs '+m(tt);$('sl').innerHTML=[...new Set(Object.values(OR).map(o=>o.store))].map(x=>'<option value="'+esc(x)+'">').join('');
+function hist(){histI();histP();drawO();drawS();drawR();const q=($('hs').value||'').toLowerCase();const ids=Object.keys(OR).filter(id=>!OR[id].t&&(OR[id].store+' '+OR[id].date).toLowerCase().includes(q)).sort((a,b)=>OR[b].ts-OR[a].ts);let tt=0;ids.forEach(id=>tt+=OR[id].net);$('hsum').textContent=ids.length+' orders | Total: Rs '+m(tt);$('sl').innerHTML=[...new Set(Object.values(OR).map(o=>o.store))].map(x=>'<option value="'+esc(x)+'">').join('');
 $('hb').innerHTML=ids.map(id=>{const o=OR[id];return '<tr><td>'+o.date+'</td><td>'+esc(o.store)+'</td><td>'+m(o.net)+'</td><td><button onclick="viewO(\''+id+'\')">View</button> <button onclick="reopen(\''+id+'\')">Edit</button> <button class="'+(DELID==id?'dg':'')+'" onclick="delO(\''+id+'\')">'+(DELID==id?'Pakka delete?':'Delete')+'</button></td></tr>'}).join('')||'<tr><td colspan="4">Koi saved order nahi</td></tr>'}
 function viewO(id){const c=ordC(OR[id]);
 $('vw').innerHTML='<b>'+esc(c.store)+' | '+c.date+'</b><div class="w"><table><thead><tr><th>Product</th><th>Qty</th><th>Bonus</th><th>Retail</th><th>Gross</th><th>Discount</th><th>Net</th></tr></thead><tbody>'+c.ln.map(l=>'<tr><td>'+esc(l.n)+'</td><td>'+l.q+'</td><td>'+l.b+'</td><td>'+m(l.r)+'</td><td>'+m(l.g)+'</td><td>'+m(l.dd)+' ('+l.dp.toFixed(1)+'%)</td><td>'+m(l.a)+'</td></tr>').join('')+'</tbody></table></div><div>Gross (retail): Rs '+m(c.gr)+'</div><div>Discount: Rs '+m(c.dl)+' | Extra '+c.xd+'%: Rs '+m(c.xa)+'</div><div class="tot">Net Total: Rs '+m(c.net)+'</div><div class="row"><button class="p" onclick="out(\'jpg\',\''+id+'\')">Image (JPG)</button><button onclick="out(\'pdf\',\''+id+'\')">PDF</button></div>';$('vw').scrollIntoView()}
@@ -416,9 +433,9 @@ $('ist').textContent='Stock: '+(s.inq-s.out)+(bl.length?' | '+bl.map(b=>(b.bt||'
 function np(){const v=i=>$('a'+i).value;if(!v(0)){msg('Name likhein');return}
 const o={n:v(0).toUpperCase(),k:v(1),b:+v(2)||0,f:+v(3)||0,d:+v(4)||0,t:+v(5)||0,r:+v(6)||0};
 if(EI>=0)P[EI]=o;else P.push(o);const nm=o.n;sv();opts();$('ps').value=nm;prods();clr();msg(nm+' save ho gaya')}
-ac('store','sb',()=>{const seen={};return Object.values(OR).sort((a,b)=>b.ts-a.ts).filter(o=>!seen[o.store]&&(seen[o.store]=1)).map(o=>({l:o.store}))},x=>{$('store').value=x.l;draw();$('pick').focus()});
+ac('store','sb',()=>{const seen={};return Object.values(OR).sort((a,b)=>b.ts-a.ts).filter(o=>o.t!='po'&&!seen[o.store]&&(seen[o.store]=1)).map(o=>({l:o.store}))},x=>{$('store').value=x.l;draw();$('pick').focus()});
 ac('pick','pkb',PK,x=>{$('pick').value=x.l;$('qty').focus()});
-ac('istore','isb',()=>{const seen={};return Object.values(OR).sort((a,b)=>b.ts-a.ts).filter(o=>!seen[o.store]&&(seen[o.store]=1)).map(o=>({l:o.store}))},x=>{$('istore').value=x.l;$('ipick').focus()});
+ac('istore','isb',()=>{const seen={};return Object.values(OR).sort((a,b)=>b.ts-a.ts).filter(o=>o.t!='po'&&!seen[o.store]&&(seen[o.store]=1)).map(o=>({l:o.store}))},x=>{$('istore').value=x.l;$('ipick').focus()});
 ac('ipick','ipkb',PK,x=>{$('ipick').value=x.l;ihint(x);$('iqty').focus()});
 ac('ppick','ppkb',PK,x=>{$('ppick').value=x.l;$('ptr').value=x.t||'';ppv();$('pqty').focus()});
 $('pdt').value=today();$('rf1').value=today().slice(0,8)+'01';$('rf2').value=today();
@@ -458,6 +475,44 @@ async function impData(el){const f=el.files&&el.files[0];if(!f)return;try{const 
  if(d.products){P=JSON.parse(d.products);P.sort(cmp);sv()}
  if(d.settings&&d.settings.n){BN=d.settings;try{localStorage.setItem('pharmName',JSON.stringify(BN))}catch(e){}if(DB)DB.doc('pharm/settings').set(BN).catch(()=>{});showBN()}
  hist();opts();draw();prods();flush();msg('Import ho gaya: '+n+' bills / purchases')}catch(e){msg('Import nahi hua: file sahi nahi')}el.value=''}
+/* ===== Purchase Order ===== */
+let PO=[],POID=null;
+const poT=it=>+it.t||(it.r?Math.round(it.r*(1-tdv()/100)*100)/100:0);
+function poC(x){const q=+x.q||0,b=+x.b||0,d=+x.d||0,t=+x.t||0,r=+x.r||0,tq=q+b,amt=Math.round(q*t*(1-d/100)*100)/100;return{tq,amt,cost:tq>0?amt/tq:0,gr:r*q,rv:r*tq}}
+function poQual(p,q){let x=/\((\d+)-(\d+) packs\)/.exec(p.n);if(x)return q>=+x[1]&&q<=+x[2];x=/\((\d+) packs? and above\)/.exec(p.n);if(x)return q>=+x[1];if(p.f>0||p.b>0)return q>=p.b;return true}
+function poDeal(p,q){const ok=q>0&&poQual(p,q);return{b:ok?bonus(p,q):0,d:ok?(+p.d||0):0}}
+function poBest(it,q){let best={b:0,d:0,c:poT(it)};P.forEach(p=>{if(clean(p.n)!=it.nm||p.k!=it.k)return;const z=poDeal(p,q),t=+p.t||poT(it),c=t*(1-z.d/100)*q/(q+z.b);if(c<best.c-1e-9)best={b:z.b,d:z.d,c}});return best}
+function poItem(){const raw=$('opick').value.trim(),A=PK();let it=A.find(x=>x.l.trim()==raw);if(!it&&raw){const ms=A.filter(x=>mt(x.l,raw)>=0);if(ms.length==1)it=ms[0]}return it}
+function fillDeals(){const it=poItem();let h='<option value="a">Auto (best deal)</option>';if(it)P.forEach((p,i)=>{if(clean(p.n)==it.nm&&p.k==it.k)h+='<option value="'+i+'">'+esc(lab(p))+'</option>'});h+='<option value="m">Manual</option>';$('odeal').innerHTML=h;poAuto()}
+function poAuto(){const it=poItem(),q=+$('oqty').value||0,s=$('odeal').value;if(s!='m'){let z={b:0,d:0};if(it&&q>0){z=s=='a'?poBest(it,q):poDeal(P[+s],q)}$('obon').value=z.b||'';$('odsc').value=z.d||''}poPv()}
+function poMan(){$('odeal').value='m';poPv()}
+function poPv(){const it=poItem(),q=+$('oqty').value||0;if(!it||!(q>0)){$('opv').textContent='';return}const x={q,b:+$('obon').value||0,d:+$('odsc').value||0,r:it.r,t:poT(it)},c=poC(x);$('opv').textContent='Retail '+m(x.r)+' | Trade '+m(x.t)+' | Total qty '+c.tq+' | Amount Rs '+m(c.amt)+' | Cost/unit '+m(c.cost)}
+function poAdd(){const it=poItem(),q=+$('oqty').value;if(!it){msg('Product list se chunein');return}if(!(q>0)){msg('Quantity likhein');return}PO.push({n:it.nm,k:it.k,q,b:+$('obon').value||0,d:+$('odsc').value||0,r:it.r,t:poT(it)});['opick','oqty','obon','odsc'].forEach(i=>$(i).value='');fillDeals();drawOL();$('opick').focus()}
+function poSet(j,f,v){PO[j][f]=+v||0;drawOL()}
+function drawOL(){let ta=0,rv=0;const ni=(j,f,v)=>'<td><input type="number" step="any" min="0" value="'+v+'" onchange="poSet('+j+',\''+f+'\',this.value)"></td>';
+$('olb').innerHTML=PO.map((x,j)=>{const c=poC(x);ta+=c.amt;rv+=c.rv;return '<tr><td>'+esc(x.n)+'</td><td>'+esc(x.k)+'</td>'+ni(j,'q',x.q)+ni(j,'b',x.b)+'<td><b>'+c.tq+'</b></td><td>'+m(x.r)+'</td>'+ni(j,'t',x.t)+ni(j,'d',x.d)+'<td>'+m(c.amt)+'</td><td>'+m(c.cost)+'</td><td><button onclick="PO.splice('+j+',1);drawOL()">x</button></td></tr>'}).join('')||'<tr><td colspan="11">Abhi koi line nahi</td></tr>';
+$('otot').textContent=m(ta);$('orv').textContent=m(rv);$('opf').textContent=m(rv-ta)}
+function tmr(n){const d=new Date(),z=v=>String(v).padStart(2,'0');d.setDate(d.getDate()+(n||0));return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate())}
+function poNew(){PO=[];POID=null;$('osup').value='';$('odt').value=today();$('osd').value=tmr(1);['opick','oqty','obon','odsc'].forEach(i=>$(i).value='');fillDeals();drawOL()}
+function poSave(){const sup=$('osup').value.trim();if(!sup){msg('Distribution ka naam likhein');return}if(!PO.length){msg('Pehle products add karein');return}
+let gr=0,tot=0;const ln=PO.map(x=>{const c=poC(x);gr+=c.gr;tot+=c.amt;const dd=c.gr-c.amt;return{n:x.n,k:x.k,q:x.q,b:x.b,d:x.d,t:x.t,r:x.r,g:c.gr,dd,dp:c.gr>0?dd/c.gr*100:0,a:c.amt,amt:c.amt,cost:c.cost}});
+const id=POID||Date.now().toString(36),old=OR[id]||{};
+OR[id]={v:3,t:'po',st:old.st||'pend',rd:old.rd||'',eta:$('osd').value,store:sup,date:$('odt').value,xd:0,gr,dl:gr-tot,g:tot,net:tot,ts:Date.now(),lines:JSON.stringify(ln)};
+locO();PEND[id]='set';locP();push(id);poNew();hist();msg('Purchase Order save ho gaya')}
+function poEdit(id){const o=OR[id];PO=JSON.parse(o.lines).map(l=>({n:l.n,k:l.k||'',q:l.q,b:l.b||0,d:l.d||0,r:l.r||0,t:l.t||0}));$('osup').value=o.store;$('odt').value=o.date;$('osd').value=o.eta||'';POID=id;drawOL();tab(7);scrollTo(0,0)}
+function poRecv(id){const o=OR[id];if(!o)return;if(o.st=='rec'){o.st='pend';o.rd=''}else{o.st='rec';o.rd=today()}OR[id]=o;locO();PEND[id]='set';locP();push(id);drawO()}
+function poToPur(id){const o=OR[id];PU=JSON.parse(o.lines).map(l=>pcalc({n:l.n,k:l.k||'',q:l.q,b:l.b||0,d:l.d||0,bt:'',ex:'',t:l.t||0,r:l.r||0,am:0}));$('psup').value=o.store;$('pno').value='';$('pdt').value=today();PID=null;tab(5);sview(2);scrollTo(0,0);msg('Ab Batch aur Expiry likh kar Save Purchase dabayein, stock barh jayega')}
+function poView(id){const o=OR[id],ln=JSON.parse(o.lines);let rv=0;
+$('ovw').innerHTML='<b>'+esc(o.store)+' | Order '+o.date+(o.eta?' | Supply '+o.eta:'')+'</b><div class="w"><table><thead><tr><th>Product</th><th>Qty</th><th>Bonus</th><th>Total</th><th>Retail</th><th>Trade</th><th>Disc%</th><th>Amount</th><th>Cost/unit</th></tr></thead><tbody>'+ln.map(l=>{const c=poC(l);rv+=c.rv;return '<tr><td>'+esc(l.n+' '+(l.k||''))+'</td><td>'+l.q+'</td><td>'+(l.b||0)+'</td><td>'+c.tq+'</td><td>'+m(l.r||0)+'</td><td>'+m(l.t||0)+'</td><td>'+(l.d||0)+'</td><td>'+m(c.amt)+'</td><td>'+m(c.cost)+'</td></tr>'}).join('')+'</tbody></table></div><div class="tot">Order amount: Rs '+m(o.net)+'</div><div class="mu">Retail value (bonus samet): Rs '+m(rv)+' | Profit: Rs '+m(rv-o.net)+'</div><div class="row noprint" style="margin-top:8px"><button class="p" onclick="out(\'jpg\',\''+id+'\')">Image (JPG)</button><button onclick="out(\'pdf\',\''+id+'\')">PDF</button></div>';$('ovw').scrollIntoView()}
+function drawO(){if(!$('ohb'))return;const q=($('ohs').value||'').toLowerCase(),td=today(),tm=tmr(1);
+const all=Object.keys(OR).filter(id=>OR[id].t=='po');let pend=0,pc=0,dT=0,dM=0;const by={};
+all.forEach(id=>{const o=OR[id];if(o.st=='rec')return;pend+=o.net;pc++;by[o.store]=(by[o.store]||0)+o.net;if(o.eta==td)dT+=o.net;if(o.eta==tm)dM+=o.net});
+$('osum').innerHTML='<div class="tot" style="font-size:16px">Supply aana baqi: Rs '+m(pend)+' <span class="mu">('+pc+' order)</span></div><div>Aaj aane wali supply: <b>Rs '+m(dT)+'</b> | Kal aane wali: <b>Rs '+m(dM)+'</b></div>'+Object.keys(by).map(k=>'<div class="mu">'+esc(k)+': Rs '+m(by[k])+'</div>').join('');
+const ids=all.filter(id=>(OR[id].store+' '+OR[id].date+' '+(OR[id].eta||'')).toLowerCase().includes(q)).sort((a,b)=>{const x=OR[a],y=OR[b];if((x.st=='rec')!=(y.st=='rec'))return x.st=='rec'?1:-1;return y.ts-x.ts});
+$('ohb').innerHTML=ids.map(id=>{const o=OR[id],rc=o.st=='rec';return '<tr><td>'+o.date+'</td><td>'+esc(o.store)+'</td><td>'+(o.eta||'-')+'</td><td>'+m(o.net)+'</td><td style="color:'+(rc?'#0b7a5b':'#c07a00')+';font-weight:600">'+(rc?'Aa gayi ✓':'Baqi')+'</td><td><button onclick="poView(\''+id+'\')">View</button> <button onclick="poRecv(\''+id+'\')">'+(rc?'Undo':'Received')+'</button> <button onclick="poToPur(\''+id+'\')">Stock</button> <button onclick="poEdit(\''+id+'\')">Edit</button> <button class="'+(DELID==id?'dg':'')+'" onclick="delO(\''+id+'\')">'+(DELID==id?'Pakka delete?':'Delete')+'</button></td></tr>'}).join('')||'<tr><td colspan="6">Koi purchase order nahi</td></tr>'}
+ac('osup','osb',()=>{const seen={};return Object.values(OR).sort((a,b)=>b.ts-a.ts).filter(o=>o.t=='po'&&!seen[o.store]&&(seen[o.store]=1)).map(o=>({l:o.store}))},x=>{$('osup').value=x.l;$('opick').focus()});
+ac('opick','okb',PK,x=>{$('opick').value=x.l;fillDeals();$('oqty').focus()});
+$('odt').value=today();$('osd').value=tmr(1);fillDeals();drawOL();
 $('st').onclick=()=>{if(DB)DB.poll();else $('cs').className='card noprint'};
 addEventListener('online',()=>{DB?DB.poll():startCloud()});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&DB)DB.poll()});
